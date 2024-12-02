@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Quiz System</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        function resetForm() {
+            document.getElementById("studentFields").style.display = "none";
+        }
+
+        window.onload = resetForm;
+    </script>
+</head>
+
+<body>
+    <div class="main">
+        <input type="checkbox" id="chk" aria-hidden="true">
+        <div class="signup">
+            <form action="register.php" method="POST" onreset="resetForm()">
+                <label for="chk" aria-hidden="true">Sign up</label>
+                <input type="text" name="txt" placeholder="User name" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="pswd" placeholder="Password" required>
+                <input type="text" name="studentId" placeholder="Student ID" required>
+                <input type="text" name="university" placeholder="College/University Name" required>
+                <button>Sign up</button>
+                <button type="reset" style="display: block;">Reset</button>
+                <p class="text">Already have an account? <label for="chk" class="toggle-link">Login</label></p>
+            </form>
+        </div>
+
+        <div class="login">
+            <form action="login.php" method="POST">
+                <label for="chk" aria-hidden="true">Login</label>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="pswd" placeholder="Password" required>
+                <button>Login</button>
+                <p class="text">Don't have an account? <label for="chk" class="toggle-link">Sign up</label></p>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+
+
+<style>/* Global body styles */
+    body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-family: 'Jost', sans-serif;
+        background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+    }
+    
+    /* Main container */
+    .main {
+        width: 350px;
+        height: 500px;
+        overflow: hidden;
+        border-radius: 10px;
+        box-shadow: 5px 20px 50px #000;
+        position: relative;
+    }
+    
+    /* Hide checkbox */
+    #chk {
+        display: none;
+    }
+    
+    /* Signup and login containers */
+    .signup,
+    .login {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        transition: transform 0.8s ease-in-out;
+    }
+    .text{
+        padding-top: 7%;
+        
+        text-align: center;
+        color: #7656ec;
+        font-size: 1.2em;
+        font-weight: bold;
+        outline: none;
+        border: none;
+    }
+    
+    label {
+        color: #7724e4;
+        font-size: 2.3em;
+        justify-content: center;
+        display: flex;
+        margin: 25px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.5s ease-in-out;
+    }
+    
+    /* Input and button styling */
+    input,
+    select {
+        width: 60%;
+        height: 30px; /* Set a reasonable height */
+        background: #e0dede;
+        justify-content: center;
+        display: flex;
+        margin: 12px auto;
+        padding: 5px; /* Adjust padding for select */
+        border: none;
+        outline: none;
+        border-radius: 5px;
+        font-size: 1em;
+        appearance: none; /* Remove default dropdown arrow for consistency */
+        cursor: pointer;
+        line-height: 1.5; /* Ensures text is vertically centered */
+    }
+    
+    select {
+        appearance: none;
+        background-color: #e0dede;
+        cursor: pointer;
+    }
+    
+    button {
+        width: 60%;
+        height: 30px;
+        margin: 10px auto;
+        justify-content: center;
+        display: block;
+        color: #fff;
+        background: #573b8a;
+        font-size: 1em;
+        font-weight: bold;
+        outline: none;
+        border: none;
+        border-radius: 5px;
+        transition: 0.2s ease-in;
+        cursor: pointer;
+    }
+    
+    button:hover {
+        background: #6d44b8;
+    }
+    
+    /* Login panel animation */
+    .login {
+        background: #d6bdee;
+        border-radius: 10px;
+        z-index: 1;
+        transform: translateY(0); /* Initial position */
+    }
+    
+    .signup {
+        background: #d6bdee;
+        z-index: 2;
+        transform: translateY(-100%); /* Initially hide signup */
+    }
+    
+    #chk:checked~.signup {
+        transform: translateY(0); /* Show signup when checked */
+    }
+    
+    #chk:checked~.login {
+        transform: translateY(100%); /* Hide login when checked */
+    }
+    
+    /* Toggle link styling */
+    .toggle-link {
+        color: #573b8a;
+        cursor: pointer;
+        text-decoration: underline;
+        font-size: 1em;
+    }
+    
+    .toggle-link:hover {
+        color: #6d44b8;
+    }
+    
+</style>

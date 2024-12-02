@@ -1,0 +1,243 @@
+<?php
+// Start the session and regenerate session ID for security
+session_start();
+session_regenerate_id(true);
+
+// Check if the user is logged in and has the correct role
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'teacher') {
+    session_destroy();  // Destroy session if role is not set or incorrect
+    header("Location: http://localhost/2/");  // Redirect to login page (index.html)
+    exit();
+}
+?><!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Quiz Dashboard</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" id="topics-link">Topics</a></li>
+                <li><a href="#" id="questions-link">Questions</a></li>
+                <li><a href="#" id="users-link">Users</a></li>
+                <li><a href="#" id="scores-link">Scores</a></li>
+                <li><a href="#" id="feedback-link">Feedback</a></li>
+                <li><a href="logout.php" class="logout">Logout</a></li>
+            </ul>
+
+        </aside>
+
+        <!-- Inside Main Content -->
+        <main class="content">
+            <h1>Welcome to the Quiz Dashboard</h1>
+            <div id="content-area">
+                <!-- Default section -->
+                <!-- topics-section -->
+                <div id="topics-section" class="section">
+                    <h2>Topics Section</h2>
+                    <div id="topics-container">
+                        <div id="topics-list">
+                            <h3>Available Topics</h3>
+                            <table id="topics-table">
+                                <thead>
+                                    <tr>
+                                        <th>Topic Name</th>
+                                        <th>Total Questions</th>
+                                        <th>Marks per Question</th>
+                                        <th>Negative Marks</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Topics will be dynamically added here -->
+                                    <?php
+// Include database connection file (db_connect.php should contain the PDO connection)
+require_once 'db_connect.php';
+
+// Fetch topics from the database
+$query = "SELECT * FROM topics";
+$stmt = $pdo->prepare($query);  // Prepare the SQL statement
+$stmt->execute();  // Execute the query
+
+// Check if there are any results
+$topics = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+?>
+
+                                    <table border="1">
+                                        <thead>
+                                            <tr>
+                                                <th>Topic Name</th>
+                                                <th>Total Questions</th>
+                                                <th>Marks Per Question</th>
+                                                <th>Negative Marks</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+        if (count($topics) > 0) {
+            // Display each topic
+            foreach ($topics as $row) {
+                echo "<tr>
+                        <td>{$row['topic_name']}</td>
+                        <td>{$row['total_questions']}</td>
+                        <td>{$row['marks_per_question']}</td>
+                        <td>{$row['negative_marks']}</td>
+                        <td>
+                            <a href='edit_topic.php?id={$row['id']}'>Edit</a> | 
+                            <a href='delete_topic.php?id={$row['id']}'>Delete</a>
+                        </td>
+                      </tr>";
+            }
+        } else {
+            // If no topics available, display a message
+            echo "<tr><td colspan='5'>No topics available.</td></tr>";
+        }
+        ?>
+
+
+                                        </tbody>
+                                    </table>
+                        </div>
+
+                        <div id="topics-actions">
+                            <h3>Manage Topics</h3>
+                            <form action="add_topic.php" method="POST">
+                                <input type="text" name="topic_name" placeholder="Enter topic name" required>
+                                <input type="number" name="total_questions" placeholder="Total questions" required>
+                                <input type="number" name="marks_per_question" placeholder="Marks per question"
+                                    required>
+                                <input type="number" name="negative_marks" placeholder="Negative marks" required>
+                                <button type="submit">Add Topic</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+<!-- Updated Code for Questions Section -->
+<div id="questions-section" class="section" style="display:none;">
+    <h2>Questions Section</h2>
+    <div id="questions-container">
+        <!-- Display Existing Questions -->
+        <div id="questions-list">
+            <h3>Existing Questions</h3>
+            <table id="questions-table">
+                <thead>
+                    <tr>
+                        <th>Topic</th>
+                        <th>Question</th>
+                        <th>Option A</th>
+                        <th>Option B</th>
+                        <th>Option C</th>
+                        <th>Option D</th>
+                        <th>Option E</th>
+                        <th>Correct Option</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    require_once 'db_connect.php';
+                    session_start();
+                    $teacher_id = $_SESSION['teacher_id']; // Ensure this is set during login.
+
+                    // Fetch questions for this teacher
+                    $query = "SELECT q.id, t.topic_name, q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, q.option_e, q.correct_option 
+                              FROM questions q 
+                              JOIN topics t ON q.topic_id = t.id 
+                              WHERE q.teacher_id = :teacher_id";
+                    $stmt = $pdo->prepare($query);
+                    $stmt->bindParam(':teacher_id', $teacher_id, PDO::PARAM_INT);
+                    $stmt->execute();
+                    $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                    if (count($questions) > 0) {
+                        foreach ($questions as $question) {
+                            echo "<tr>
+                                    <td>{$question['topic_name']}</td>
+                                    <td>{$question['question_text']}</td>
+                                    <td>{$question['option_a']}</td>
+                                    <td>{$question['option_b']}</td>
+                                    <td>{$question['option_c']}</td>
+                                    <td>{$question['option_d']}</td>
+                                    <td>{$question['option_e']}</td>
+                                    <td>{$question['correct_option']}</td>
+                                    <td>
+                                        <a href='edit_question.php?id={$question['id']}'>Edit</a> | 
+                                        <a href='delete_question.php?id={$question['id']}'>Delete</a>
+                                    </td>
+                                  </tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='9'>No questions available.</td></tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Add New Question -->
+        <div id="add-question">
+            <h3>Add New Question</h3>
+            <form action="add_question.php" method="POST">
+                <select name="topic_id" required>
+                    <option value="">Select Topic</option>
+                    <?php
+                    // Fetch topics for dropdown
+                    $topics_query = "SELECT id, topic_name, total_questions FROM topics";
+                    $topics_stmt = $pdo->prepare($topics_query);
+                    $topics_stmt->execute();
+                    $topics = $topics_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                    foreach ($topics as $topic) {
+                        echo "<option value='{$topic['id']}'>{$topic['topic_name']} (Max: {$topic['total_questions']} questions)</option>";
+                    }
+                    ?>
+                </select>
+                <input type="text" name="question_text" placeholder="Enter question" required>
+                <input type="text" name="option_a" placeholder="Option A" required>
+                <input type="text" name="option_b" placeholder="Option B" required>
+                <input type="text" name="option_c" placeholder="Option C">
+                <input type="text" name="option_d" placeholder="Option D">
+                <input type="text" name="option_e" placeholder="Option E">
+                <input type="text" name="correct_option" placeholder="Correct Option (e.g., A)" required>
+                <input type="hidden" name="teacher_id" value="<?php echo $teacher_id; ?>">
+                <button type="submit">Add Question</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+                <div id="users-section" class="section" style="display:none;">
+                    <h2>Users Section</h2>
+                    <p>Here you can manage users.</p>
+                </div>
+
+                <div id="scores-section" class="section" style="display:none;">
+                    <h2>Scores Section</h2>
+                    <p>Here you can manage quiz scores.</p>
+                </div>
+
+                <div id="feedback-section" class="section" style="display:none;">
+                    <h2>Feedback Section</h2>
+                    <p>Here you can view user feedback.</p>
+                </div>
+            </div>
+        </main>
+
+        <script src="script.js"></script>
+</body>
+
+</html>

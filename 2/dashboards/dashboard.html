@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Quiz Dashboard</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" id="topics-link" onclick="switchSection('topics')">Topics</a></li>
+                <li><a href="#" id="questions-link" onclick="switchSection('questions')">Questions</a></li>
+                <li><a href="#" id="users-link" onclick="switchSection('users')">Users</a></li>
+                <li><a href="#" id="access-link" onclick="switchSection('access')">Access</a></li>
+                <li><a href="#" id="scores-link" onclick="switchSection('scores')">Scores</a></li>
+
+                <li><a href="logout.php" class="logout">Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content">
+            <h1>Welcome to the Quiz Dashboard</h1>
+            <div id="content-area">
+                <div id="topics-section" class="section"></div>
+                <div id="questions-section" class="section" style="display:none;"></div>
+                <div id="users-section" class="section" style="display:none;"></div>
+                <div id="scores-section" class="section" style="display:none;"></div>
+                <div id="access-section" class="section" style="display:none;"></div>
+                <div id="feedback-section" class="section" style="display:none;"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+
+</html>
